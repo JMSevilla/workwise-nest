@@ -7,8 +7,6 @@ import {
     Headers,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { UserService } from 'src/user/user.service';
-import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { Public } from './decorators/public.decorator';
 import { LocalAuthGuard } from './guards/local-auth.guard';
@@ -22,14 +20,8 @@ import { JwtRefreshTokenGuard } from './guards/jwt-refresh-token.guard';
 export class AuthController {
     constructor(
         private readonly authService: AuthService,
-        private readonly usersService: UserService,
         private readonly jwtService: JwtService
     ) {}
-
-    @Post('create-account')
-    async signUp(@Body() createUserDto: CreateUserDto) {
-        return this.usersService.create(createUserDto);
-    }
 
     @Public()
     @UseGuards(LocalAuthGuard)

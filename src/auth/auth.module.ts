@@ -2,22 +2,24 @@ import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { PassportModule } from '@nestjs/passport'
-import { UserModule } from 'src/user/user.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/user/entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy/jwt.strategy';
-import { UserService } from 'src/user/user.service';
 import { RefreshTokenIdsStorage } from './refresh-token-ids-storage';
 import { LocalStrategy } from './strategy/local.strategy';
 import { JwtRefreshTokenStrategy } from './strategy/jwt-token-refresh.strategy';
+import { AccountsModule } from 'src/logic/backoffice/accounts/accounts.module';
+import { Accounts } from 'src/logic/backoffice/accounts/entities/accounts.entity';
+import { AccountsService } from 'src/logic/backoffice/accounts/accounts.service';
+import { Verification } from 'src/models/verification.entity';
+import { VerificationService } from 'src/logic/business/verification/verification.service';
 
 @Module({
   imports: [
-    UserModule,
+    AccountsModule,
     ConfigModule.forRoot(),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([Accounts, Verification]),
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'secret',
@@ -27,7 +29,8 @@ import { JwtRefreshTokenStrategy } from './strategy/jwt-token-refresh.strategy';
   providers: [
     AuthService,
     JwtStrategy,
-    UserService,
+    AccountsService,
+    VerificationService,
     RefreshTokenIdsStorage,
     LocalStrategy,
     JwtRefreshTokenStrategy
