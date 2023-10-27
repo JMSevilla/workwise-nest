@@ -1,14 +1,14 @@
 import { Injectable , Logger, UnauthorizedException } from '@nestjs/common';
 import { SignInDto } from './dto/sign-in.dto';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/user/user.service';
 import { ConfigService } from '@nestjs/config';
 import { Repository } from 'typeorm';
-import { User } from 'src/user/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TokenExpiredError } from 'jsonwebtoken';
 import { JwtRefreshTokenStrategy } from './strategy/jwt-token-refresh.strategy';
 import { RefreshTokenIdsStorage } from './refresh-token-ids-storage';
+import { Accounts } from 'src/logic/backoffice/accounts/entities/accounts.entity';
+import { AccountsService } from 'src/logic/backoffice/accounts/accounts.service';
 
 
 @Injectable()
@@ -16,10 +16,10 @@ export class AuthService {
     private readonly logger = new Logger(JwtRefreshTokenStrategy.name)
 
     constructor(
-        @InjectRepository(User)
-        private usersRepository: Repository<User>,
+        @InjectRepository(Accounts)
+        private accountsRepository: Repository<Accounts>,
         private readonly jwtService: JwtService,
-        private readonly usersService: UserService,
+        private readonly accountsService: AccountsService,
         private readonly configService: ConfigService,
         private readonly refreshTokenIdsStorage: RefreshTokenIdsStorage
     ) {}
@@ -48,7 +48,7 @@ export class AuthService {
     }
 
     async validateUser(username: string, password: string): Promise<any> {
-        const user = await this.usersService.findByUsername(username)
+        const user = await this.accountsService.findByUsername(username)
         if(user && (await user.validatePassword(password))){
             const { password, ...result } = user;
             return result;

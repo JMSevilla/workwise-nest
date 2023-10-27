@@ -2,9 +2,9 @@ import { ExtractJwt, Strategy } from 'passport-jwt'
 import { PassportStrategy } from '@nestjs/passport'
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/user/user.service';
 import { Logger } from '@nestjs/common';
 import { JwtPayload } from '../jwt-payload.interface'
+import { AccountsService } from 'src/logic/backoffice/accounts/accounts.service';
 
 @Injectable()
 export class JwtRefreshTokenStrategy extends PassportStrategy (
@@ -15,7 +15,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy (
 
     constructor(
         private readonly jwtService: JwtService,
-        private readonly usersService: UserService
+        private readonly accountsService: AccountsService
     ) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -27,7 +27,7 @@ export class JwtRefreshTokenStrategy extends PassportStrategy (
 
     async validate(payload: JwtPayload): Promise<any> {
         this.logger.warn(`Payload: ${JSON.stringify(payload)}`)
-        const user = await this.usersService.findOne(payload.sub)
+        const user = await this.accountsService.findOne(payload.sub)
         if(!user){
             this.logger.error('User not found.')
             throw new UnauthorizedException()

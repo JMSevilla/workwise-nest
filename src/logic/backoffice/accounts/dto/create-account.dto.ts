@@ -5,6 +5,7 @@ import {
     IsEnum,
     IsInt,
     IsNotEmpty,
+    IsOptional,
     IsString,
     Matches,
     MinLength,
@@ -14,13 +15,14 @@ import {
 const passwordRegEx =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*d)(?=.*[@$!%*?&])[A-Za-zd@$!%*?&]{8,20}$/;
 
-export class CreateUserDto {
+export class CreateAccountDto {
     @IsString()
     @MinLength(2, { message: 'Firstname must be atleast 2 characters length. '})
     @IsNotEmpty()
     firstname: string;
 
     @IsString()
+    @IsOptional()
     middlename: string;
 
     @IsString()
@@ -51,14 +53,4 @@ export class CreateUserDto {
 
     @IsString()
     imgurl: string;
-
-    @IsInt()
-    status: number;
-
-    @IsInt()
-    verified: number;
-
-    @IsString()
-    @IsEnum(['admin', 'moderator', 'user'])
-    access_level: string;
 }
